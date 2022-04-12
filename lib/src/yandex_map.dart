@@ -68,8 +68,11 @@ class _YandexMapState extends State<YandexMap> {
           function init () {
             var myMap = new ymaps.Map('map', {
                     center: [55.76, 37.64],
-                    zoom: 10
-                }),
+                    zoom: 10,
+                    controls: ['zoomControl']
+                },
+                {suppressMapOpenBlock: true}
+                ),
                 objectManager = new ymaps.ObjectManager({
                     clusterize: true,
                     gridSize: 32,
