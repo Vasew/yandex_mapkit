@@ -58,7 +58,7 @@ class _YandexMapState extends State<YandexMap> {
       DivElement frame = DivElement();
       StyleElement styleElement = StyleElement();
       styleElement.type = "text/css";
-      styleElement.innerHtml = """ html, body { height: 100% } #map a { color: #04b; text-decoration: none; } a:visited { color: #04b; } a:hover { color: #f50000; } """;   // here css style
+      styleElement.innerHtml = """ html, body { height: 100% } #map { height: 100% } a { color: #04b; text-decoration: none; } a:visited { color: #04b; } a:hover { color: #f50000; } """;   // here css style
       frame.append(styleElement); 
       DivElement divElement = DivElement();
       divElement.id = "map";
