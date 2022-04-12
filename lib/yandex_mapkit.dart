@@ -3,7 +3,9 @@ library yandex_mapkit;
 import 'dart:async';
 import 'dart:core';
 import 'dart:typed_data';
-import 'dart:ui';
+import 'dart:html';
+import 'dart:ui' as ui;
+
 
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
