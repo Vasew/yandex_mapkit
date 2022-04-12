@@ -54,6 +54,49 @@ class _YandexMapState extends State<YandexMap> {
           Factory<OneSequenceGestureRecognizer>(() => EagerGestureRecognizer())
         ].toSet(),
       );
+    }  else if(kIsWeb) {
+      DivElement frame = DivElement();
+      StyleElement styleElement = StyleElement();
+      styleElement.type = "text/css";
+      styleElement.innerHtml = """ html, body { height: 100% } #map a { color: #04b; text-decoration: none; } a:visited { color: #04b; } a:hover { color: #f50000; } """;   // here css style
+      frame.append(styleElement); 
+      DivElement divElement = DivElement();
+      divElement.id = "map";
+      ScriptElement scriptElement = new ScriptElement();
+      var script = """  function init () {
+            var myMap = new ymaps.Map('map', {
+                    center: [55.76, 37.64],
+                    zoom: 10
+                }, {
+                    searchControlProvider: 'yandex#search'
+                }),
+                objectManager = new ymaps.ObjectManager({
+                    clusterize: true,
+                    gridSize: 32,
+                    clusterDisableClickZoom: true
+                });
+        
+            objectManager.objects.options.set('preset', 'islands#greenDotIcon');
+            objectManager.clusters.options.set('preset', 'islands#greenClusterIcons');
+            myMap.geoObjects.add(objectManager);
+        
+            \$.ajax({
+                url: "data.json"
+            }).done(function(data) {
+                objectManager.add(data);
+            });
+        
+        }
+        
+        """;
+      scriptElement.innerHtml = script;
+      frame.append(scriptElement);
+
+      // ignore: undefined_prefixed_name
+      ui.platformViewRegistry.registerViewFactory(
+          'yandex_mapkit',
+              (int viewId) => frame);
+      return HtmlElementView(viewType: 'yandex_mapkit');
     } else {
       return UiKitView(
         viewType: YandexMap.viewType,
