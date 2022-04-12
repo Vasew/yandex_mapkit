@@ -58,13 +58,14 @@ class _YandexMapState extends State<YandexMap> {
       DivElement frame = DivElement();
       StyleElement styleElement = StyleElement();
       styleElement.type = "text/css";
-      styleElement.innerHtml = """ html, body { height: 100% } #map { height: 100% } a { color: #04b; text-decoration: none; } a:visited { color: #04b; } a:hover { color: #f50000; } """;   // here css style
+      styleElement.innerHtml = """ #map { height: 100% } a { color: #04b; text-decoration: none; } a:visited { color: #04b; } a:hover { color: #f50000; } """;   // here css style
       frame.append(styleElement); 
       DivElement divElement = DivElement();
       divElement.id = "map";
       frame.append(divElement);
       ScriptElement scriptElement = new ScriptElement();
-      var script = """  function init () {
+      var script = """ ymaps.ready(init);
+          function init () {
             var myMap = new ymaps.Map('map', {
                     center: [55.76, 37.64],
                     zoom: 10
