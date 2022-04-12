@@ -62,6 +62,7 @@ class _YandexMapState extends State<YandexMap> {
       frame.append(styleElement); 
       DivElement divElement = DivElement();
       divElement.id = "map";
+      frame.append(divElement);
       ScriptElement scriptElement = new ScriptElement();
       var script = """  function init () {
             var myMap = new ymaps.Map('map', {
