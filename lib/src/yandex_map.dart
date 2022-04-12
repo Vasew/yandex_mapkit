@@ -56,12 +56,10 @@ class _YandexMapState extends State<YandexMap> {
       );
     }  else if(kIsWeb) {
       DivElement frame = DivElement();
-      StyleElement styleElement = StyleElement();
-      styleElement.type = "text/css";
-      styleElement.innerHtml = """ #map { height: 100% } a { color: #04b; text-decoration: none; } a:visited { color: #04b; } a:hover { color: #f50000; } """;   // here css style
-      frame.append(styleElement); 
-      DivElement divElement = DivElement();
-      divElement.id = "map";
+      DivElement divElement = DivElement()
+          ..id = "map"
+          ..style.width = '100%'
+          ..style.height = '100%';
       frame.append(divElement);
       ScriptElement scriptElement = new ScriptElement();
       var script = """ ymaps.ready(init);
