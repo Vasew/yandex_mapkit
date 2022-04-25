@@ -4,8 +4,8 @@ class YandexMap extends StatefulWidget {
   /// A `Widget` for displaying Yandex Map
   const YandexMap({
     Key key,
-    this.mapObjects = const [],
     this.onMapCreated,
+    this.mapObjects = const [],
     this.onMapTap,
     this.onMapLongTap,
     this.onMapSizeChanged,
