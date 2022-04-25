@@ -111,9 +111,9 @@ class _YandexMapState extends State<YandexMap> {
 
       // ignore: undefined_prefixed_name
       ui.platformViewRegistry.registerViewFactory(
-          YandexMap._viewType,
+          YandexMap.viewType,
               (int viewId) => frame);
-      return HtmlElementView(viewType: YandexMap._viewType);
+      return HtmlElementView(viewType: YandexMap.viewType);
     } else {
       return UiKitView(
         viewType: YandexMap.viewType,
