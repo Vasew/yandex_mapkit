@@ -33,3 +33,4 @@ part 'src/types/suggest_item.dart';
 part 'src/yandex_map.dart';
 part 'src/yandex_map_controller.dart';
 part 'src/yandex_search.dart';
+part 'src/types/map_objects/map_object.dart';
