@@ -21,7 +21,7 @@ class YandexMap extends StatefulWidget {
   final MapCreatedCallback onMapCreated;
   
   /// Map objects to show on map
-  final List<MapObject> mapObjects
+  final List<MapObject> mapObjects;
 
   /// Called once when [YandexMap] is first rendered on screen.
   ///
