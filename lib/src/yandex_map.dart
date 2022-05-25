@@ -66,6 +66,7 @@ class _YandexMapState extends State<YandexMap> {
         print("!!! Map init ${centerPoint}");
       } else {
         centerPoint = [55.76, 37.64];
+        print("MAP NOT");
       }
 
       DivElement frame = DivElement();
