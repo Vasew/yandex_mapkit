@@ -6,6 +6,7 @@ class YandexMap extends StatefulWidget {
     Key key,
     this.onMapCreated,
     this.mapObjects = const [],
+    this.mapObjectsWeb = const [],
     this.onMapTap,
     this.onMapLongTap,
     this.onMapSizeChanged,
@@ -22,6 +23,9 @@ class YandexMap extends StatefulWidget {
   
   /// Map objects to show on map
   final List<MapObject> mapObjects;
+  
+  /// Map objects to show on map web
+  final List<dynamic> mapObjectsWeb;
 
   /// Called once when [YandexMap] is first rendered on screen.
   ///
@@ -60,6 +64,7 @@ class _YandexMapState extends State<YandexMap> {
       );
     } else if(kIsWeb) {
       var centerPoint;
+      print("! MAP - ${widget.mapObjectsWeb}");
       if(widget.mapObjects.isNotEmpty){
         var mapObjectsJson = widget.mapObjects.first.toJson();
         centerPoint = [mapObjectsJson['point']['latitude'], mapObjectsJson['point']['longitude']];
