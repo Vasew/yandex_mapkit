@@ -68,11 +68,8 @@ class _YandexMapState extends State<YandexMap> {
       if(widget.mapObjectsWeb.isNotEmpty){
         centerPoint = [widget.mapObjectsWeb.first['latitude'], widget.mapObjectsWeb.first['longitude']];
         for (var element in widget.mapObjectsWeb) { arrayWeb = '$arrayWeb {"type": "Feature", "id": 8, "geometry": {"type": "Point", "coordinates": ${element.toString()}}, "properties": {"balloonContentHeader": "", "balloonContentBody": ""}},'; }
-        
-        print("!!! Map init web ${centerPoint} - $arrayWeb");
       } else {
         centerPoint = [55.76, 37.64];
-        print("MAP NOT");
       }
 
       DivElement frame = DivElement();
@@ -91,6 +88,8 @@ class _YandexMapState extends State<YandexMap> {
       } """;
       //var dJson = dataJson.toJson();
 
+        print("!!! Map init web $dataJson");
+      
       ScriptElement scriptElement = new ScriptElement();
       var script = """ setTimeout(function(){ ymaps.ready(init);
         function init () {
