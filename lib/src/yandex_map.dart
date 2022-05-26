@@ -109,7 +109,7 @@ class _YandexMapState extends State<YandexMap> {
             objectManager.add($dataJson);
             myMap.geoObjects.add(objectManager);
         }
-        },1000);
+        },10000);
         """;
       scriptElement.innerHtml = script;
       frame.append(scriptElement);
