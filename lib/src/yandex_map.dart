@@ -1,5 +1,7 @@
 part of yandex_mapkit;
 
+import 'dart:math';
+
 class YandexMap extends StatefulWidget {
   /// A `Widget` for displaying Yandex Map
   const YandexMap({
@@ -72,9 +74,12 @@ class _YandexMapState extends State<YandexMap> {
         centerPoint = [55.76, 37.64];
       }
 
+      Random random = new Random();
+      int randomNumber = random.nextInt(100); 
+
       DivElement frame = DivElement();
       DivElement divElement = DivElement()
-          ..id = "map"
+          ..id = "map_$randomNumber"
           ..style.width = '100%'
           ..style.height = '100%';
       frame.append(divElement);
@@ -91,7 +96,7 @@ class _YandexMapState extends State<YandexMap> {
       var script = """ setTimeout(function(){ ymaps.ready(init);
         console.log('Перезагрузка');
         function init () {
-            var myMap = new ymaps.Map('map', {
+            var myMap = new ymaps.Map('map_$randomNumber', {
                     center: $centerPoint,
                     zoom: 10,
                     controls: ['zoomControl']
@@ -109,7 +114,7 @@ class _YandexMapState extends State<YandexMap> {
             objectManager.add($dataJson);
             myMap.geoObjects.add(objectManager);
         }
-        },10000);
+        },1000);
         """;
       scriptElement.innerHtml = script;
       frame.append(scriptElement);
