@@ -66,6 +66,7 @@ class _YandexMapState extends State<YandexMap> {
       var centerPoint;
       var centerPointWeb;
       print("! MAP - ${widget.mapObjectsWeb.first}");
+      Map<String, dynamic> startMap toJson() => widget.mapObjectsWeb.first;
       /*if(widget.mapObjectsWeb.isNotEmpty){
         var mapObjectsJsonWeb = widget.mapObjectsWeb.first.toJson();
         centerPointWeb = [mapObjectsJsonWeb['point']['latitude'], mapObjectsJsonWeb['point']['longitude']];
