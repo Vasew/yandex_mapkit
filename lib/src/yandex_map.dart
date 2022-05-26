@@ -89,6 +89,7 @@ class _YandexMapState extends State<YandexMap> {
       
       ScriptElement scriptElement = new ScriptElement();
       var script = """ setTimeout(function(){ ymaps.ready(init);
+        console.log('Перезагрузка');
         function init () {
             var myMap = new ymaps.Map('map', {
                     center: $centerPoint,
