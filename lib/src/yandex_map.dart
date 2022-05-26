@@ -67,7 +67,7 @@ class _YandexMapState extends State<YandexMap> {
       var arrayWeb = "";
       if(widget.mapObjectsWeb.isNotEmpty){
         centerPoint = [widget.mapObjectsWeb.first['latitude'], widget.mapObjectsWeb.first['longitude']];
-        for (var element in widget.mapObjectsWeb) { arrayWeb = '$arrayWeb {"type": "Feature", "id": 8, "geometry": {"type": "Point", "coordinates": ${element.toString()}}, "properties": {"balloonContentHeader": "", "balloonContentBody": ""}},'; }
+        for (var element in widget.mapObjectsWeb) { arrayWeb = '$arrayWeb {"type": "Feature", "id": 8, "geometry": {"type": "Point", "coordinates": [${element['latitude']}, ${element['longitude']}]}, "properties": {"balloonContentHeader": "", "balloonContentBody": ""}},'; }
       } else {
         centerPoint = [55.76, 37.64];
       }
