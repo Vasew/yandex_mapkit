@@ -1,7 +1,5 @@
 part of yandex_mapkit;
 
-import 'dart:math';
-
 class YandexMap extends StatefulWidget {
   /// A `Widget` for displaying Yandex Map
   const YandexMap({
