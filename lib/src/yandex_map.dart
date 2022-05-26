@@ -75,7 +75,7 @@ class _YandexMapState extends State<YandexMap> {
       Random random = new Random();
       int randomNumber = random.nextInt(100); 
 
-      DivElement frame = DivElement();
+      DivElement frame = IFrameElement();
       DivElement divElement = DivElement()
           ..id = "map_$randomNumber"
           ..style.width = '100%'
