@@ -64,7 +64,6 @@ class _YandexMapState extends State<YandexMap> {
       );
     } else if(kIsWeb) {
       var centerPoint;
-      print("! MAP WEB - ${widget.mapObjectsWeb.first['longitude']}");
       if(widget.mapObjectsWeb.isNotEmpty){
         centerPoint = [widget.mapObjectsWeb.first['latitude'], widget.mapObjectsWeb.first['longitude']];
         print("!!! Map init web ${centerPoint}");
@@ -83,7 +82,7 @@ class _YandexMapState extends State<YandexMap> {
       var dataJson = """ { 
           "type": "FeatureCollection",
           "features": [
-              {"type": "Feature", "id": 8, "geometry": {"type": "Point", "coordinates": [55.73765394535,37.618482167428]}, "properties": {"balloonContentHeader": "", "balloonContentBody": ""}}
+              {"type": "Feature", "id": 8, "geometry": {"type": "Point", "coordinates": $centerPoint}, "properties": {"balloonContentHeader": "", "balloonContentBody": ""}}
           ] 
       } """;
       //var dJson = dataJson.toJson();
