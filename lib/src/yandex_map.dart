@@ -86,9 +86,6 @@ class _YandexMapState extends State<YandexMap> {
               {"type": "Feature", "id": 8, "geometry": {"type": "Point", "coordinates": $centerPoint}, "properties": {"balloonContentHeader": "", "balloonContentBody": ""}}
           ] 
       } """;
-      //var dJson = dataJson.toJson();
-
-        print("!!! Map init web $dataJson");
       
       ScriptElement scriptElement = new ScriptElement();
       var script = """ setTimeout(function(){ ymaps.ready(init);
@@ -115,6 +112,7 @@ class _YandexMapState extends State<YandexMap> {
         """;
       scriptElement.innerHtml = script;
       frame.append(scriptElement);
+      print("UPDATE");
 
       // ignore: undefined_prefixed_name
       ui.platformViewRegistry.registerViewFactory(
