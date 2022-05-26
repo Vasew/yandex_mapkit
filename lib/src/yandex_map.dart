@@ -108,8 +108,8 @@ class _YandexMapState extends State<YandexMap> {
         
             objectManager.objects.options.set('preset', 'islands#greenDotIcon');
             objectManager.clusters.options.set('preset', 'islands#greenClusterIcons');
-            myMap.geoObjects.add(objectManager);
             objectManager.add($dataJson);
+            myMap.geoObjects.add(objectManager);
         }
         },1000);
         """;
