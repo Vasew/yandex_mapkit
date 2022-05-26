@@ -64,6 +64,7 @@ class _YandexMapState extends State<YandexMap> {
       );
     } else if(kIsWeb) {
       var centerPoint;
+      var centerPointWeb;
       print("! MAP - ${widget.mapObjectsWeb}");
       if(widget.mapObjectsWeb.isNotEmpty){
         var mapObjectsJsonWeb = widget.mapObjectsWeb.first.toJson();
