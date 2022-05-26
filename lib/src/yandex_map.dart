@@ -64,18 +64,11 @@ class _YandexMapState extends State<YandexMap> {
       );
     } else if(kIsWeb) {
       var centerPoint;
-      var centerPointWeb;
       print("! MAP WEB - ${widget.mapObjectsWeb.first['longitude']}");
-      /*if(widget.mapObjectsWeb.isNotEmpty){
+      if(widget.mapObjectsWeb.isNotEmpty){
         var mapObjectsJsonWeb = widget.mapObjectsWeb.first.toJson();
-        centerPointWeb = [mapObjectsJsonWeb['point']['latitude'], mapObjectsJsonWeb['point']['longitude']];
-        print("!!! Map init web ${centerPointWeb}");
-      }*/
-      
-      if(widget.mapObjects.isNotEmpty){
-        var mapObjectsJson = widget.mapObjects.first.toJson();
-        centerPoint = [mapObjectsJson['point']['latitude'], mapObjectsJson['point']['longitude']];
-        print("!!! Map init ${centerPoint}");
+        centerPoint = [widget.mapObjectsWeb.first['latitude'], widget.mapObjectsWeb.first['longitude']];
+        print("!!! Map init web ${centerPoint}");
       } else {
         centerPoint = [55.76, 37.64];
         print("MAP NOT");
