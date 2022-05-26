@@ -66,7 +66,6 @@ class _YandexMapState extends State<YandexMap> {
       var centerPoint;
       print("! MAP WEB - ${widget.mapObjectsWeb.first['longitude']}");
       if(widget.mapObjectsWeb.isNotEmpty){
-        var mapObjectsJsonWeb = widget.mapObjectsWeb.first.toJson();
         centerPoint = [widget.mapObjectsWeb.first['latitude'], widget.mapObjectsWeb.first['longitude']];
         print("!!! Map init web ${centerPoint}");
       } else {
