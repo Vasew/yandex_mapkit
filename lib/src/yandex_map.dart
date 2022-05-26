@@ -65,12 +65,12 @@ class _YandexMapState extends State<YandexMap> {
     } else if(kIsWeb) {
       var centerPoint;
       var centerPointWeb;
-      print("! MAP - ${widget.mapObjectsWeb.first}");
       Map<String, dynamic> _$MapWebObjJsonToJson(Placemark instance) =>
         <String, dynamic>{
           'point': instance.point,
         };
       Map<String, dynamic> toJson() => _$MapWebObjJsonToJson(widget.mapObjectsWeb.first);
+      print("! MAP - ${_$MapWebObjJsonToJson}");
       /*if(widget.mapObjectsWeb.isNotEmpty){
         var mapObjectsJsonWeb = widget.mapObjectsWeb.first.toJson();
         centerPointWeb = [mapObjectsJsonWeb['point']['latitude'], mapObjectsJsonWeb['point']['longitude']];
