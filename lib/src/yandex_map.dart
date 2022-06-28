@@ -68,7 +68,7 @@ class _YandexMapState extends State<YandexMap> {
       if(widget.mapObjectsWeb.isNotEmpty){
         centerPoint = [widget.mapObjectsWeb.first['latitude'], widget.mapObjectsWeb.first['longitude']];
         for (var element in widget.mapObjectsWeb) { 
-          arrayWeb = '$arrayWeb {"type": "Feature", "id": ${element['id']}, "geometry": {"type": "Point", "coordinates": [${element['latitude']}, ${element['longitude']}]}, "properties": {"balloonContentHeader": "", "balloonContentBody": "", "clusterCaption": "${element['address']}",}},'; 
+          arrayWeb = '$arrayWeb {"type": "Feature", "id": ${element['id']}, "geometry": {"type": "Point", "coordinates": [${element['latitude']}, ${element['longitude']}]}, "properties": {"balloonContentHeader": "", "balloonContentBody": "", "balloonContentFooter": "<font size=1>Информация предоставлена: </font> <strong>этим балуном</strong>", "clusterCaption": "<strong><s>Еще</s> одна</strong> метка",	"hintContent": "<strong>Текст  <s>подсказки</s></strong>"}},'; 
         }
       } else {
         centerPoint = [55.76, 37.64];
