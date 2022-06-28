@@ -117,7 +117,7 @@ class _YandexMapState extends State<YandexMap> {
       scriptElement.innerHtml = script;
       frame.append(scriptElement);
       
-      String registerYandexMapId = "${YandexMap._viewType}_$randomNumber";
+      String registerYandexMapId = "${YandexMap.viewType}_$randomNumber";
 
       // ignore: undefined_prefixed_name
       ui.platformViewRegistry.registerViewFactory(
