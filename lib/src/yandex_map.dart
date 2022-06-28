@@ -70,7 +70,7 @@ class _YandexMapState extends State<YandexMap> {
         widget.mapObjectsWeb.removeAt(0);
         var address;
         for (var element in widget.mapObjectsWeb) { 
-          var address = element['address'] ?? "";
+          var address = htmlEscape.convert(element['address']) ?? "";
           var title = htmlEscape.convert(element['title']);
           arrayWeb = '$arrayWeb {"type": "Feature", "id": ${element['id']}, "geometry": {"type": "Point", "coordinates": [${element['latitude']}, ${element['longitude']}]}, "properties": {"balloonContentHeader": "", "balloonContentBody": "", "balloonContentFooter": "<strong>${title}</strong>", "clusterCaption": "${address}",	"hintContent": "<strong>Текст  <s>подсказки</s></strong>"}},'; 
         }
