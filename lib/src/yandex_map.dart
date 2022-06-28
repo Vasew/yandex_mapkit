@@ -78,7 +78,7 @@ class _YandexMapState extends State<YandexMap> {
 
       DivElement frame = DivElement();
       DivElement divElement = DivElement()
-          ..id = "map_$randomNumber"
+          ..id = idMapRand
           ..style.width = '100%'
           ..style.height = '100%';
       frame.append(divElement);
@@ -86,7 +86,7 @@ class _YandexMapState extends State<YandexMap> {
       var dataJson = """ { 
           "type": "FeatureCollection",
           "features": [
-             /* $arrayWeb */
+              $arrayWeb
               {"type": "Feature", "id": 8, "geometry": {"type": "Point", "coordinates": $centerPoint}, "properties": {"balloonContentHeader": "", "balloonContentBody": ""}}
           ] 
       } """;
