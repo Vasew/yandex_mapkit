@@ -85,10 +85,7 @@ class _YandexMapState extends State<YandexMap> {
 
       var dataJson = """ { 
           "type": "FeatureCollection",
-          "features": [
-              $arrayWeb
-              {"type": "Feature", "id": 8, "geometry": {"type": "Point", "coordinates": $centerPoint}, "properties": {"balloonContentHeader": "", "balloonContentBody": ""}}
-          ] 
+          "features": [   $arrayWeb   ] 
       } """;
       
       ScriptElement scriptElement = new ScriptElement();
