@@ -73,7 +73,8 @@ class _YandexMapState extends State<YandexMap> {
       }
 
       Random random = new Random();
-      int randomNumber = random.nextInt(100); 
+      int randomNumber = random.nextInt(100);
+      String idMapRand = "map-$randomNumber";
 
       DivElement frame = DivElement();
       DivElement divElement = DivElement()
@@ -92,9 +93,8 @@ class _YandexMapState extends State<YandexMap> {
       
       ScriptElement scriptElement = new ScriptElement();
       var script = """ setTimeout(function(){ ymaps.ready(init);
-        console.log('Перезагрузка');
         function init () {
-            var myMap = new ymaps.Map('map_$randomNumber', {
+            var myMap = new ymaps.Map('$idMapRand', {
                     center: $centerPoint,
                     zoom: 10,
                     controls: ['zoomControl']
@@ -116,13 +116,14 @@ class _YandexMapState extends State<YandexMap> {
         """;
       scriptElement.innerHtml = script;
       frame.append(scriptElement);
-      print("UPDATE");
+      
+      String registerYandexMapId = "${YandexMap._viewType}_$randomNumber";
 
       // ignore: undefined_prefixed_name
       ui.platformViewRegistry.registerViewFactory(
-          YandexMap.viewType,
+          registerYandexMapId,
               (int viewId) => frame);
-      return HtmlElementView(viewType: YandexMap.viewType);
+      return HtmlElementView(viewType: registerYandexMapId);
     } else {
       return UiKitView(
         viewType: YandexMap.viewType,
