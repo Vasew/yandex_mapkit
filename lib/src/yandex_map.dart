@@ -95,9 +95,11 @@ class _YandexMapState extends State<YandexMap> {
       } """;
       
       ScriptElement scriptElement = new ScriptElement();
-      var script = """ setTimeout(function(){ ymaps.ready(init);
+      var script = """
+        setTimeout(function(){ ymaps.ready(init);
+        var myMap;
         function init () {
-            var myMap = new ymaps.Map('$idMapRand', {
+            myMap = new ymaps.Map('$idMapRand', {
                     center: $centerPoint,
                     zoom: 10,
                     controls: ['zoomControl']
@@ -114,8 +116,9 @@ class _YandexMapState extends State<YandexMap> {
             objectManager.clusters.options.set('preset', 'islands#greenClusterIcons');
             objectManager.add($dataJson);
             myMap.geoObjects.add(objectManager);
-        }
-        },1000);
+            
+            myMap.setBounds(myMap.geoObjects.getBounds(),{checkZoomRange:true, zoomMargin:9});
+        }},1000);
         """;
       scriptElement.innerHtml = script;
       frame.append(scriptElement);
