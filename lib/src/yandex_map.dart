@@ -73,7 +73,7 @@ class _YandexMapState extends State<YandexMap> {
         for (var element in widget.mapObjectsWeb) { 
           address = htmlEscape.convert(element['address']) ?? "";
           title = htmlEscape.convert(element['title']);
-          arrayWeb = '$arrayWeb {"type": "Feature", "id": ${element['id']}, "geometry": {"type": "Point", "coordinates": [${element['latitude']}, ${element['longitude']}]}, "properties": {"balloonContentHeader": "", "balloonContentBody": "", "balloonContentFooter": "<strong>${title}</strong>", "clusterCaption": "${address}",	"hintContent": "<strong>Текст  <s>подсказки</s></strong>"}, "options":{"iconLayout": "default#image", "iconImageHref": "images/myIcon.gif"}},'; 
+          arrayWeb = '$arrayWeb {"type": "Feature", "id": ${element['id']}, "geometry": {"type": "Point", "coordinates": [${element['latitude']}, ${element['longitude']}]}, "properties": {"balloonContentHeader": "", "balloonContentBody": "", "balloonContentFooter": "<strong>${title}</strong>", "clusterCaption": "${address}",	"hintContent": "<strong>Текст  <s>подсказки</s></strong>"}, "options":{"iconLayout": "default#image", "iconImageHref": "https://www.avangard.ru/img/marker.png", "iconImageSize": [30, 42], "iconImageOffset": [-5, -38]}},'; 
         }
       } else {
         centerPoint = [55.76, 37.64];
