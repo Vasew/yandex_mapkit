@@ -99,7 +99,8 @@ class _YandexMapState extends State<YandexMap> {
       
       var styleYaMaps = """
         ymaps .ymaps-2-1-79-zoom__plus,
-        ymaps .ymaps-2-1-79-zoom__minus {
+        ymaps .ymaps-2-1-79-zoom__minus,
+        ymaps .ymaps-2-1-79-controls__control .ymaps-2-1-79-float-button {
           border-radius: 50%;
           border: 1px solid #025232;
           width: 46px;
@@ -125,21 +126,16 @@ class _YandexMapState extends State<YandexMap> {
           padding: 51px 0;
           width: 46px;
         }
-        ymaps .ymaps-2-1-79-controls__control .ymaps-2-1-79-float-button {
-          border-radius: 50%;
-            border: 1px solid #025232;
-            width: 46px;
-            height: 46px;
-            box-shadow: none;
-            background: rgba(255, 255, 255, 0.8);
-        }
         ymaps .ymaps-2-1-79-float-button-icon_icon_geolocation {
-          background: url(icons/maps_geolocation.svg) no-repeat center
+          background: url(icons/maps_geolocation.svg) no-repeat center;
           width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            margin: 0;
-            border: 0;
+          height: 44px;
+          border-radius: 50%;
+          margin: 0;
+          border: 0;
+        }
+        ymaps .ymaps-2-1-79-copyright {
+          display:none
         }
       """;
       
