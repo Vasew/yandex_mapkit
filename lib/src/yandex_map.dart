@@ -105,13 +105,21 @@ class _YandexMapState extends State<YandexMap> {
           width: 46px;
           height: 46px;
           box-shadow: none;
-          background: rgba(255, 255, 255, 0.8);
+          background: rgba(255, 255, 255, 0.8)
         }
         ymaps .ymaps-2-1-79-zoom__plus .ymaps-2-1-79-zoom__icon {
-          background: url(icons/maps_plus.svg);
+          background: url(icons/maps_plus.svg) no-repeat center
         }
         ymaps .ymaps-2-1-79-zoom__minus .ymaps-2-1-79-zoom__icon {
           background: url(icons/maps_minus.svg);
+        }
+        ymaps .ymaps-2-1-79-zoom__plus .ymaps-2-1-79-zoom__icon,
+        ymaps .ymaps-2-1-79-zoom__minus .ymaps-2-1-79-zoom__icon {
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          margin: 0;
+          border: 0;
         }
       """;
       
