@@ -140,6 +140,8 @@ class _YandexMapState extends State<YandexMap> {
                     gridSize: 32,
                     clusterDisableClickZoom: true
                 });
+                
+            myMap.controls.add('rulerControl', { scaleLine: false });
         
             objectManager.objects.options.set('preset', 'islands#greenDotIcon');
             objectManager.clusters.options.set('preset', 'islands#greenClusterIcons');
