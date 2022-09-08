@@ -136,7 +136,9 @@ class _YandexMapState extends State<YandexMap> {
         }},1000);
         """;
       scriptElement.innerHtml = script;
+      styleElement.innerHtml = styleYaMaps;
       frame.append(scriptElement);
+      frame.append(styleElement);
       
       String registerYandexMapId = "${YandexMap.viewType}_$randomNumber";
 
