@@ -131,7 +131,7 @@ class _YandexMapState extends State<YandexMap> {
             myMap = new ymaps.Map('$idMapRand', {
                     center: $centerPoint,
                     zoom: 10,
-                    controls: ['zoomControl', 'geolocationControl']
+                    controls: []
                 },
                 {suppressMapOpenBlock: true}
                 ),
@@ -140,12 +140,22 @@ class _YandexMapState extends State<YandexMap> {
                     gridSize: 32,
                     clusterDisableClickZoom: true
                 });
+            
+            myMap.controls.add('zoomControl', {
+                size: 'small',
+                float: 'none',
+                position: {
+                    top: '50px',
+                    right: '30px'
+                }
+            });
+            myMap.controls.add('rulerControl', { scaleLine: false });
+            myMap.controls.add('geolocationControl');
         
             objectManager.objects.options.set('preset', 'islands#greenDotIcon');
             objectManager.clusters.options.set('preset', 'islands#greenClusterIcons');
             objectManager.add($dataJson);
             myMap.geoObjects.add(objectManager);
-            myMap.controls.add('rulerControl', { scaleLine: false });
             
             myMap.setBounds(myMap.geoObjects.getBounds(),{checkZoomRange:true, zoomMargin:9});
         }},1000);
