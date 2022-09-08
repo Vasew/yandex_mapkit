@@ -142,15 +142,20 @@ class _YandexMapState extends State<YandexMap> {
                 });
             
             myMap.controls.add('zoomControl', {
-                size: 'small',
+                size: 'middle',
                 float: 'none',
                 position: {
                     top: '50px',
                     right: '30px'
                 }
             });
-            myMap.controls.add('rulerControl', { scaleLine: false });
-            myMap.controls.add('geolocationControl');
+            //myMap.controls.add('rulerControl', { scaleLine: false });
+            myMap.controls.add('geolocationControl', {
+                position: {
+                    bottom: '24px',
+                    right: '24px'
+                }
+            });
         
             objectManager.objects.options.set('preset', 'islands#greenDotIcon');
             objectManager.clusters.options.set('preset', 'islands#greenClusterIcons');
