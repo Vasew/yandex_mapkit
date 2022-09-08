@@ -121,6 +121,10 @@ class _YandexMapState extends State<YandexMap> {
           margin: 0;
           border: 0;
         }
+        ymaps .ymaps-2-1-79-zoom {
+          padding: 51px 0;
+          width: 46px;
+        }
       """;
       
       ScriptElement scriptElement = new ScriptElement();
