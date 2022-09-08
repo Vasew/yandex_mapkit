@@ -142,11 +142,11 @@ class _YandexMapState extends State<YandexMap> {
                 });
             
             myMap.controls.add('zoomControl', {
-                size: 'middle',
+                size: 'small',
                 float: 'none',
                 position: {
-                    top: '50px',
-                    right: '30px'
+                    top: '24px',
+                    right: '24px'
                 }
             });
             //myMap.controls.add('rulerControl', { scaleLine: false });
