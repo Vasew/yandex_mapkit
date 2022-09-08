@@ -107,6 +107,12 @@ class _YandexMapState extends State<YandexMap> {
           box-shadow: none;
           background: rgba(255, 255, 255, 0.8);
         }
+        ymaps .ymaps-2-1-79-zoom__plus .ymaps-2-1-79-zoom__icon {
+          background: url(icons/maps_plus.svg);
+        }
+        ymaps .ymaps-2-1-79-zoom__minus .ymaps-2-1-79-zoom__icon {
+          background: url(icons/maps_minus.svg);
+        }
       """;
       
       ScriptElement scriptElement = new ScriptElement();
