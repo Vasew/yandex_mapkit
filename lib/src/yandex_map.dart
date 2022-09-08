@@ -95,6 +95,20 @@ class _YandexMapState extends State<YandexMap> {
           "features": [   $arrayWeb   ] 
       } """;
       
+      StyleElement styleElement = new StyleElement();
+      
+      var styleYaMaps = """
+        ymaps .ymaps-2-1-79-zoom__plus,
+        ymaps .ymaps-2-1-79-zoom__minus {
+          border-radius: 50%;
+          border: 1px solid #025232;
+          width: 46px;
+          height: 46px;
+          box-shadow: none;
+          background: rgba(255, 255, 255, 0.8);
+        }
+      """;
+      
       ScriptElement scriptElement = new ScriptElement();
       var script = """
         setTimeout(function(){ ymaps.ready(init);
