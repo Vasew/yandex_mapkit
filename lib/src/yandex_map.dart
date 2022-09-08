@@ -127,7 +127,7 @@ class _YandexMapState extends State<YandexMap> {
           width: 46px;
         }
         ymaps .ymaps-2-1-79-float-button-icon_icon_geolocation {
-          background: url(icons/maps_geolocation.svg) no-repeat center;
+          background: url(icons/maps_geolocation.svg) no-repeat 8px 50%;
           width: 44px;
           height: 44px;
           border-radius: 50%;
