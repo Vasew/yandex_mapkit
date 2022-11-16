@@ -5,504 +5,389 @@ class YandexMapController extends ChangeNotifier {
     _channel.setMethodCallHandler(_handleMethodCall);
   }
 
-  static const double kTilt = 0.0;
-  static const double kAzimuth = 0.0;
-  static const double kZoom = 15.0;
-  static const Color kAccuracyCircleFillColor = Colors.blueGrey;
-  static const bool kUserArrowOrientation = true;
-
   final MethodChannel _channel;
   final _YandexMapState _yandexMapState;
 
-  /// Has the native view been rendered
-  bool _viewRendered = false;
-
-  final List<Placemark> placemarks = <Placemark>[];
-  final List<Polyline> polylines = <Polyline>[];
-  final List<Polygon> polygons = <Polygon>[];
-  CameraPositionCallback _cameraPositionCallback;
-  ClusterizedPlacemarkCollection _clusterizedPlacemarkCollection;
-
-  static YandexMapController init(int id, _YandexMapState yandexMapState) {
-    final MethodChannel methodChannel = MethodChannel('yandex_mapkit/yandex_map_$id');
+  static Future<YandexMapController> _init(int id, _YandexMapState yandexMapState) async {
+    final methodChannel = MethodChannel('yandex_mapkit/yandex_map_$id');
+    await methodChannel.invokeMethod('waitForInit');
 
     return YandexMapController._(methodChannel, yandexMapState);
   }
 
-  /// Set Yandex logo position
-  Future<void> logoAlignment({
-    @required HorizontalAlignment horizontal,
-    @required VerticalAlignment vertical,
+  /// Toggles current user location layer
+  ///
+  /// Requires location permissions:
+  ///
+  /// iOS: `NSLocationWhenInUseUsageDescription`
+  /// Android: `android.permission.ACCESS_FINE_LOCATION`
+  ///
+  /// Does nothing if these permissions were denied
+  Future<void> toggleUserLayer({
+    required bool visible,
+    bool headingEnabled = true,
+    bool autoZoomEnabled = false,
+    UserLocationAnchor? anchor
   }) async {
-    await _channel.invokeMethod<void>('logoAlignment', <String, int>{
-      'x': horizontal.index,
-      'y': vertical.index,
+    await _channel.invokeMethod(
+      'toggleUserLayer',
+      {
+        'visible': visible,
+        'headingEnabled': headingEnabled,
+        'autoZoomEnabled': autoZoomEnabled,
+        'anchor': anchor?.toJson()
+      }
+    );
+  }
+
+  /// Toggles layer with traffic information
+  Future<void> toggleTrafficLayer({
+    required bool visible
+  }) async {
+    await _channel.invokeMethod(
+      'toggleTrafficLayer',
+      {
+        'visible': visible
+      }
+    );
+  }
+
+  /// Selects a geo object with the specified objectId in the specified layerId.
+  /// If the object is not currently on the screen, it is selected anyway, but the user will not actually see that.
+  /// You need to move the camera in addition to this call to be sure that the selected object is visible for the user.
+  Future<void> selectGeoObject(String objectId, String layerId) async {
+    await _channel.invokeMethod('selectGeoObject', {
+      'objectId': objectId,
+      'layerId': layerId
     });
   }
 
-  /// Toggles night mode
-  Future<void> toggleNightMode({@required bool enabled}) async {
-    await _channel.invokeMethod<void>(
-      'toggleNightMode',
-      <String, dynamic>{'enabled': enabled},
-    );
+  /// Resets the currently selected geo object.
+  Future<void> deselectGeoObject() async {
+    await _channel.invokeMethod('deselectGeoObject');
   }
 
-  /// Toggles rotation of map
-  Future<void> toggleMapRotation({@required bool enabled}) async {
-    await _channel.invokeMethod<void>(
-      'toggleMapRotation',
-      <String, dynamic>{'enabled': enabled},
-    );
+  /// Applies JSON style transformations to the map.
+  /// Set to empty string to clear previous styling.
+  ///
+  /// Returns true if the style was successfully parsed, and false otherwise.
+  /// If the returned value is false, the current map style remains unchanged.
+  ///
+  /// For styling details refer to https://yandex.com/dev/maps/mapkit/doc/dg/concepts/style.html
+  Future<bool> setMapStyle(String style) async {
+    return await _channel.invokeMethod('setMapStyle', {'style': style});
   }
 
-  /// Toggles tilting of map
-  Future<void> toggleMapTilting({@required bool enabled}) async {
-    await _channel.invokeMethod<void>(
-      'toggleMapTilting',
-      <String, dynamic>{'enabled': enabled},
-    );
-  }
-
-  /// Shows an icon at current user location
+  /// Changes the map camera position.
   ///
-  /// Requires location permissions:
-  ///
-  /// `NSLocationWhenInUseUsageDescription`
-  ///
-  /// `android.permission.ACCESS_FINE_LOCATION`
-  ///
-  /// Does nothing if these permissions where denied
-  Future<void> showUserLayer(
-      {@required String iconName,
-      @required String arrowName,
-      bool userArrowOrientation = kUserArrowOrientation,
-      Color accuracyCircleFillColor = kAccuracyCircleFillColor}) async {
-    await _channel.invokeMethod<void>(
-      'showUserLayer',
-      <String, dynamic>{
-        'iconName': iconName,
-        'arrowName': arrowName,
-        'userArrowOrientation': userArrowOrientation,
-        'accuracyCircleFillColor': accuracyCircleFillColor.value
-      },
-    );
-  }
-
-  /// Hides an icon at current user location
-  ///
-  /// Requires location permissions:
-  ///
-  /// `NSLocationWhenInUseUsageDescription`
-  ///
-  /// `android.permission.ACCESS_FINE_LOCATION`
-  ///
-  /// Does nothing if these permissions where denied
-  Future<void> hideUserLayer() async {
-    await _channel.invokeMethod<void>('hideUserLayer');
-  }
-
-  /// Applies styling to the map
-  Future<void> setMapStyle({@required String style}) async {
-    await _channel.invokeMethod<void>(
-      'setMapStyle',
-      <String, dynamic>{'style': style},
-    );
-  }
-
-  /// Moves camera to specified [point]
-  Future<void> move({
-    @required Point point,
-    double zoom = kZoom,
-    double azimuth = kAzimuth,
-    double tilt = kTilt,
-    MapAnimation animation,
+  /// The returned [Future] completes after the change has been made on the platform side.
+  /// Returns true if camera position has been succesfully changes
+  /// Returns false if camera position movement has been canceled
+  /// (for example, as a result of a subsequent request for camera movement)
+  Future<bool> moveCamera(CameraUpdate cameraUpdate, {
+    MapAnimation? animation
   }) async {
-    await _channel.invokeMethod<void>(
-      'move',
-      <String, dynamic>{
-        'point': <String, dynamic>{
-          'latitude': point.latitude,
-          'longitude': point.longitude,
-        },
-        'animation': <String, dynamic>{
-          'animate': animation != null,
-          'smoothAnimation': animation?.smooth,
-          'animationDuration': animation?.duration
-        },
-        'zoom': zoom,
-        'azimuth': azimuth,
-        'tilt': tilt,
-      },
+    return await _channel.invokeMethod(
+      'moveCamera',
+      {
+        'cameraUpdate': cameraUpdate.toJson(),
+        'animation': animation?.toJson(),
+      }
     );
   }
 
-  /// Moves map to include area inside [southWestPoint] and [northEastPoint]
-  Future<void> setBounds({
-    @required Point southWestPoint,
-    @required Point northEastPoint,
-    MapAnimation animation,
-  }) async {
-    await _channel.invokeMethod<void>(
-      'setBounds',
-      <String, dynamic>{
-        'southWestPoint': <String, dynamic>{
-          'latitude': southWestPoint.latitude,
-          'longitude': southWestPoint.longitude,
-        },
-        'northEastPoint': <String, dynamic>{
-          'latitude': northEastPoint.latitude,
-          'longitude': northEastPoint.longitude,
-        },
-        'animation': <String, dynamic>{
-          'animate': animation != null,
-          'smoothAnimation': animation?.smooth,
-          'animationDuration': animation?.duration
-        }
-      },
-    );
-  }
+  /// Transforms the position from map coordinates to screen coordinates.
+  ///
+  /// [ScreenPoint] is relative to the top left of the map.
+  /// Returns null if [Point] is behind camera.
+  Future<ScreenPoint?> getScreenPoint(Point point) async {
+    final dynamic result = await _channel.invokeMethod('getScreenPoint', point.toJson());
 
-  /// Does nothing if passed `Placemark` is `null`
-  Future<void> addPlacemark(Placemark placemark) async {
-    if (placemark != null) {
-      await _channel.invokeMethod<void>(
-        'addPlacemark',
-        _placemarkParams(placemark),
-      );
-      placemarks.add(placemark);
+    if (result != null) {
+      return ScreenPoint._fromJson(result);
     }
+
+    return null;
   }
 
-  /// Disables listening for map camera updates
-  Future<void> disableCameraTracking() async {
-    _cameraPositionCallback = null;
-    await _channel.invokeMethod<void>('disableCameraTracking');
-  }
+  /// Transforms the position from screen coordinates to map coordinates.
+  ///
+  /// [ScreenPoint] should be relative to the top left of the map.
+  /// Returns null if the resulting [Point] is behind camera.
+  Future<Point?> getPoint(ScreenPoint screenPoint) async {
+    final dynamic result = await _channel.invokeMethod('getPoint', screenPoint.toJson());
 
-  /// Enables listening for map camera updates
-  Future<Point> enableCameraTracking(
-    PlacemarkStyle placemarkStyle,
-    CameraPositionCallback callback,
-  ) async {
-    _cameraPositionCallback = callback;
-
-    final dynamic point = await _channel.invokeMethod<dynamic>(
-      'enableCameraTracking',
-      placemarkStyle != null ? _placemarkStyleParams(placemarkStyle) : null,
-    );
-    return Point(latitude: point['latitude'], longitude: point['longitude']);
-  }
-
-  /// Does nothing if passed `Placemark` wasn't added before
-  Future<void> removePlacemark(Placemark placemark) async {
-    if (placemarks.remove(placemark)) {
-      await _channel.invokeMethod<void>(
-        'removePlacemark',
-        <String, dynamic>{'hashCode': placemark.hashCode},
-      );
+    if (result != null) {
+      return Point._fromJson(result);
     }
+
+    return null;
   }
 
-  /// Does nothing if passed `Polyline` is `null`
-  Future<void> addPolyline(Polyline polyline) async {
-    if (polyline != null) {
-      await _channel.invokeMethod<void>(
-        'addPolyline',
-        _polylineParams(polyline),
-      );
-      polylines.add(polyline);
+  // Returns min available zoom for visible map region
+  Future<double> getMinZoom() async {
+    final double minZoom = await _channel.invokeMethod('getMinZoom');
+
+    return minZoom;
+  }
+
+  // Returns max available zoom for visible map region
+  Future<double> getMaxZoom() async {
+    final double maxZoom = await _channel.invokeMethod('getMaxZoom');
+
+    return maxZoom;
+  }
+
+  /// Returns current user position point
+  /// Before using this method user layer must be visible
+  /// [YandexMapController.toggleUserLayer] must be called with `visible: true`
+  ///
+  /// [CameraPosition] is returned only if native YandexMap successfully calculates current position
+  Future<CameraPosition?> getUserCameraPosition() async {
+    final dynamic result = await _channel.invokeMethod('getUserCameraPosition');
+
+    if (result != null) {
+      return CameraPosition._fromJson(result['cameraPosition']);
     }
+
+    return null;
   }
 
-  /// Does nothing if passed `Polyline` wasn't added before
-  Future<void> removePolyline(Polyline polyline) async {
-    if (polylines.remove(polyline)) {
-      await _channel.invokeMethod<void>(
-        'removePolyline',
-        <String, dynamic>{'hashCode': polyline.hashCode},
-      );
-    }
-  }
+  /// Returns current camera position
+  Future<CameraPosition> getCameraPosition() async {
+    final dynamic result = await _channel.invokeMethod('getCameraPosition');
 
-  /// Does nothing if passed `Polygon` is `null`
-  Future<void> addPolygon(Polygon polygon) async {
-    if (polygon != null) {
-      await _channel.invokeMethod<void>('addPolygon', _polygonParams(polygon));
-      polygons.add(polygon);
-    }
-  }
-
-  /// Does nothing if passed `Polygon` wasn't added before
-  Future<void> removePolygon(Polygon polygon) async {
-    if (polygons.remove(polygon)) {
-      await _channel.invokeMethod<void>(
-        'removePolygon',
-        <String, dynamic>{'hashCode': polygon.hashCode},
-      );
-    }
-  }
-
-  /// Increases current zoom by 1
-  Future<void> zoomIn() async {
-    await _channel.invokeMethod<void>('zoomIn');
-  }
-
-  /// Decreases current zoom by 1
-  Future<void> zoomOut() async {
-    await _channel.invokeMethod<void>('zoomOut');
-  }
-
-  /// Moves camera to user position
-  Future<void> moveToUser() async {
-    await _channel.invokeMethod<void>('moveToUser');
-  }
-
-  /// Returns current camera position point
-  Future<Point> getTargetPoint() async {
-    final dynamic point = await _channel.invokeMethod<dynamic>('getTargetPoint');
-    return Point(latitude: point['latitude'], longitude: point['longitude']);
+    return CameraPosition._fromJson(result['cameraPosition']);
   }
 
   /// Get bounds of visible map area
-  Future<Map<String, Point>> getVisibleRegion() async {
-    final dynamic region = await _channel.invokeMethod<dynamic>('getVisibleRegion');
-    return Map<String, Point>.of(<String, Point>{
-      'bottomLeftPoint': Point(
-        latitude: region['bottomLeftPoint']['latitude'],
-        longitude: region['bottomLeftPoint']['longitude'],
-      ),
-      'bottomRightPoint': Point(
-        latitude: region['bottomRightPoint']['latitude'],
-        longitude: region['bottomRightPoint']['longitude'],
-      ),
-      'topLeftPoint': Point(
-        latitude: region['topLeftPoint']['latitude'],
-        longitude: region['topLeftPoint']['longitude'],
-      ),
-      'topRightPoint': Point(
-        latitude: region['topRightPoint']['latitude'],
-        longitude: region['topRightPoint']['longitude'],
-      )
-    });
+  Future<VisibleRegion> getVisibleRegion() async {
+    final dynamic result = await _channel.invokeMethod('getVisibleRegion');
+
+    return VisibleRegion._fromJson(result['visibleRegion']);
   }
 
-  Future<void> addClusterizedPlacemarkCollection(
-    ClusterizedPlacemarkCollection collection,
-  ) async {
-    if (collection != null) {
-      final args = _clusterizedPlacemarkCollectionParams(collection);
-      await _channel.invokeMethod<void>(
-        'addClusterizedPlacemarkCollection',
-        args,
-      );
-      _clusterizedPlacemarkCollection = collection;
-    }
+  /// Gets the region corresponding to current focusRect or the visible region if focusRect hasn't been set.
+  ///
+  /// In contrast to [getVisibleRegion] this also takes into account focusRect.
+  Future<VisibleRegion> getFocusRegion() async {
+    final dynamic result = await _channel.invokeMethod('getFocusRegion');
+
+    return VisibleRegion._fromJson(result['focusRegion']);
   }
 
-  Future<void> removeClusterizedPlacemarkCollection() async {
-    await _channel.invokeMethod<void>('removeClusterizedPlacemarkCollection');
+  /// Changes current map options
+  Future<void> _updateMapOptions(Map<String, dynamic> options) async {
+    await _channel.invokeMethod('updateMapOptions', options);
   }
 
-  Future<void> _handleMethodCall(MethodCall call) async {
+  /// Changes map objects on the map
+  Future<void> _updateMapObjects(Map<String, dynamic> updates) async {
+    await _channel.invokeMethod('updateMapObjects', updates);
+  }
+
+  Future<dynamic> _handleMethodCall(MethodCall call) async {
     switch (call.method) {
+      case 'onTrafficChanged':
+        return _onTrafficChanged(call.arguments);
       case 'onMapTap':
-        _onMapTap(call.arguments);
-        break;
-      case 'onMapLongTap':
-        _onMapLongTap(call.arguments);
-        break;
-      case 'onMapObjectTap':
-        _onMapObjectTap(call.arguments);
-        break;
-      case 'onMapSizeChanged':
-        _onMapSizeChanged(call.arguments);
-        break;
-      case 'onCameraPositionChanged':
-        _onCameraPositionChanged(call.arguments);
-        break;
+        return _onMapTap(call.arguments);
+      case 'onClustersRemoved':
+        return _onClustersRemoved(call.arguments);
+      case 'onClusterAdded':
+        return _onClusterAdded(call.arguments);
       case 'onClusterTap':
-        _onClusterTap(call.arguments);
-        break;
-      case 'onClusterizedCollectionPlacemarkTap':
-        _onClusterizedCollectionPlacemarkTap(call.arguments);
-        break;
+        return _onClusterTap(call.arguments);
+      case 'onMapLongTap':
+        return _onMapLongTap(call.arguments);
+      case 'onObjectTap':
+        return _onObjectTap(call.arguments);
+      case 'onMapObjectTap':
+        return _onMapObjectTap(call.arguments);
+      case 'onMapObjectDragStart':
+        return _onMapObjectDragStart(call.arguments);
+      case 'onMapObjectDrag':
+        return _onMapObjectDrag(call.arguments);
+      case 'onMapObjectDragEnd':
+        return _onMapObjectDragEnd(call.arguments);
+      case 'onUserLocationAdded':
+        return await _onUserLocationAdded(call.arguments);
+      case 'onCameraPositionChanged':
+        return _onCameraPositionChanged(call.arguments);
       default:
         throw MissingPluginException();
     }
   }
 
+  void _onObjectTap(dynamic arguments) {
+    if (_yandexMapState.widget.onObjectTap == null) {
+      return;
+    }
+
+    _yandexMapState.widget.onObjectTap!(GeoObject._fromJson(arguments['geoObject']));
+  }
+
   void _onMapTap(dynamic arguments) {
-    _yandexMapState.onMapTap(Point(
-      latitude: arguments['latitude'],
-      longitude: arguments['longitude'],
-    ));
+    if (_yandexMapState.widget.onMapTap == null) {
+      return;
+    }
+
+    _yandexMapState.widget.onMapTap!(Point._fromJson(arguments['point']));
   }
 
   void _onMapLongTap(dynamic arguments) {
-    _yandexMapState.onMapLongTap(Point(
-      latitude: arguments['latitude'],
-      longitude: arguments['longitude'],
-    ));
-  }
-
-  void _onMapObjectTap(dynamic arguments) {
-    final int hashCode = arguments['hashCode'];
-    final Point point = Point(
-      latitude: arguments['latitude'],
-      longitude: arguments['longitude'],
-    );
-
-    final Placemark placemark = placemarks.firstWhere(
-      (Placemark placemark) => placemark.hashCode == hashCode,
-      orElse: () => null,
-    );
-
-    if (placemark != null && placemark.onTap != null) {
-      placemark.onTap(point);
-    }
-  }
-
-  void _onMapSizeChanged(dynamic arguments) {
-    if (!_viewRendered) {
-      _viewRendered = true;
-      _yandexMapState.onMapRendered();
+    if (_yandexMapState.widget.onMapLongTap == null) {
+      return;
     }
 
-    _yandexMapState.onMapSizeChanged(MapSize(
-      width: arguments['width'],
-      height: arguments['height'],
-    ));
+    _yandexMapState.widget.onMapLongTap!(Point._fromJson(arguments['point']));
   }
 
   void _onCameraPositionChanged(dynamic arguments) {
-    _cameraPositionCallback(arguments);
+    if (_yandexMapState.widget.onCameraPositionChanged == null) {
+      return;
+    }
+
+    _yandexMapState.widget.onCameraPositionChanged!(
+      CameraPosition._fromJson(arguments['cameraPosition']),
+      CameraUpdateReason.values[arguments['reason']],
+      arguments['finished']
+    );
+  }
+
+  Future<Map<String, dynamic>?> _onUserLocationAdded(dynamic arguments) async {
+    final pin = PlacemarkMapObject(
+      mapId: MapObjectId('user_location_pin'),
+      point: Point._fromJson(arguments['pinPoint'])
+    );
+    final arrow = PlacemarkMapObject(
+      mapId: MapObjectId('user_location_arrow'),
+      point: Point._fromJson(arguments['arrowPoint'])
+    );
+    final accuracyCircle = CircleMapObject(
+      mapId: MapObjectId('user_location_accuracy_circle'),
+      circle: Circle._fromJson(arguments['circle'])
+    );
+    final view = UserLocationView._(arrow: arrow, pin: pin, accuracyCircle: accuracyCircle);
+    final newView = _yandexMapState.widget.onUserLocationAdded != null ?
+      (await _yandexMapState.widget.onUserLocationAdded!(view)) :
+      view;
+    final newPin = newView?.pin.dup(pin.mapId) ?? pin;
+    final newArrow = newView?.arrow.dup(arrow.mapId) ?? arrow;
+    final newAccuracyCircle = newView?.accuracyCircle.dup(accuracyCircle.mapId) ?? accuracyCircle;
+
+    _yandexMapState._nonRootMapObjects.addAll([newPin, newArrow, newAccuracyCircle]);
+
+    return {
+      'pin': newPin.toJson(),
+      'arrow': newArrow.toJson(),
+      'accuracyCircle': newAccuracyCircle.toJson()
+    };
+  }
+
+  void _onClustersRemoved(dynamic arguments) {
+    final appearancePlacemarkIds = arguments['appearancePlacemarkIds'];
+
+    for (var appearancePlacemarkId in appearancePlacemarkIds) {
+      _yandexMapState._nonRootMapObjects.remove(_findMapObject(_yandexMapState._allMapObjects, appearancePlacemarkId));
+    }
+  }
+
+  Future<Map<String, dynamic>> _onClusterAdded(dynamic arguments) async {
+    final id = arguments['id'];
+    final size = arguments['size'];
+    final mapObject = _findMapObject(_yandexMapState._allMapObjects, id) as ClusterizedPlacemarkCollection;
+    final placemarks = arguments['placemarkIds']
+      .map<PlacemarkMapObject>((el) => _findMapObject(mapObject.placemarks, el) as PlacemarkMapObject)
+      .toList();
+    final appearance = PlacemarkMapObject(
+      mapId: MapObjectId(arguments['appearancePlacemarkId']),
+      point: Point._fromJson(arguments['point'])
+    );
+    final cluster = Cluster._(size: size, appearance: appearance, placemarks: placemarks);
+    final newAppearance = (await mapObject._clusterAdd(cluster))?.appearance ?? cluster.appearance;
+
+    _yandexMapState._nonRootMapObjects.add(newAppearance);
+
+    return newAppearance.toJson();
   }
 
   void _onClusterTap(dynamic arguments) {
-    final List<dynamic> placemarkIds = arguments['placemarks'];
-    if (_clusterizedPlacemarkCollection.onClusterTap != null) {
-      _clusterizedPlacemarkCollection.onClusterTap(placemarkIds);
-    }
+    final id = arguments['id'];
+    final size = arguments['size'];
+    final mapObject = _findMapObject(_yandexMapState._allMapObjects, id) as ClusterizedPlacemarkCollection;
+    final placemarks = arguments['placemarkIds']
+      .map<PlacemarkMapObject>((el) => _findMapObject(mapObject.placemarks, el) as PlacemarkMapObject)
+      .toList();
+    final appearance = _findMapObject(
+      _yandexMapState._allMapObjects,
+      arguments['appearancePlacemarkId']
+    ) as PlacemarkMapObject;
+    final cluster = Cluster._(size: size, appearance: appearance, placemarks: placemarks);
+
+    mapObject._clusterTap(cluster);
   }
 
-  void _onClusterizedCollectionPlacemarkTap(dynamic arguments) {
-    final dynamic id = arguments['id'];
+  void _onMapObjectTap(dynamic arguments) {
+    final id = arguments['id'];
+    final point = Point._fromJson(arguments['point']);
+    final mapObject = _findMapObject(_yandexMapState._allMapObjects, id);
 
-    PlacemarkCollectionItem tappedItem;
-    for (var collection in _clusterizedPlacemarkCollection.placemarks) {
-      final foundItems = collection.items.where(
-        (e) => const DeepCollectionEquality().equals(<dynamic>[e.id], <dynamic>[id]),
-      );
-      if (foundItems.isNotEmpty) {
-        tappedItem = foundItems.first;
-        break;
+    mapObject!._tap(point);
+  }
+
+  void _onMapObjectDragStart(dynamic arguments) {
+    final id = arguments['id'];
+    final mapObject = _findMapObject(_yandexMapState._allMapObjects, id);
+
+    mapObject!._dragStart();
+  }
+
+  void _onMapObjectDrag(dynamic arguments) {
+    final id = arguments['id'];
+    final point = Point._fromJson(arguments['point']);
+    final mapObject = _findMapObject(_yandexMapState._allMapObjects, id);
+
+    mapObject!._drag(point);
+  }
+
+  void _onMapObjectDragEnd(dynamic arguments) {
+    final id = arguments['id'];
+    final mapObject = _findMapObject(_yandexMapState._allMapObjects, id);
+
+    mapObject!._dragEnd();
+  }
+
+  void _onTrafficChanged(dynamic arguments) {
+    if (_yandexMapState.widget.onTrafficChanged == null) {
+      return;
+    }
+
+    final trafficLevel = arguments['trafficLevel'] == null ? null : TrafficLevel._fromJson(arguments['trafficLevel']);
+    _yandexMapState.widget.onTrafficChanged!(trafficLevel);
+  }
+
+  MapObject? _findMapObject(List<MapObject> mapObjects, String id) {
+    for (var mapObject in mapObjects) {
+      var foundMapObject;
+
+      if (mapObject.mapId.value == id) {
+        foundMapObject = mapObject;
+      }
+
+      if (foundMapObject == null && mapObject is MapObjectCollection) {
+        foundMapObject = _findMapObject(mapObject.mapObjects, id);
+      }
+
+      if (foundMapObject == null && mapObject is ClusterizedPlacemarkCollection) {
+        foundMapObject = _findMapObject(mapObject.placemarks, id);
+      }
+
+      if (foundMapObject != null) {
+        return foundMapObject;
       }
     }
-    if (tappedItem?.onTap != null) {
-      tappedItem.onTap(id);
-    }
-  }
 
-  Map<String, dynamic> _placemarkParams(Placemark placemark) {
-    return <String, dynamic>{
-      'hashCode': placemark.hashCode,
-      'point': <String, dynamic>{
-        'latitude': placemark.point.latitude,
-        'longitude': placemark.point.longitude,
-      },
-    }..addAll(_placemarkStyleParams(placemark.style));
-  }
-
-  Map<String, dynamic> _placemarkStyleParams(PlacemarkStyle style) {
-    return <String, dynamic>{
-      'style': _placemarkStyleInternalParams(style),
-    };
-  }
-
-  Map<String, dynamic> _placemarkStyleInternalParams(PlacemarkStyle style) {
-    return <String, dynamic>{
-      'anchorX': style.iconAnchor.latitude,
-      'anchorY': style.iconAnchor.longitude,
-      'scale': style.scale,
-      'zIndex': style.zIndex,
-      'opacity': style.opacity,
-      'isDraggable': style.isDraggable,
-      'iconName': style.iconName,
-      'rawImageData': style.rawImageData,
-      'rotationType': style.rotationType.index,
-      'direction': style.direction,
-    };
-  }
-
-  Map<String, dynamic> _clusterizedPlacemarkCollectionParams(ClusterizedPlacemarkCollection collection) {
-    return <String, dynamic>{
-      'placemarks': collection.placemarks.map((x) => _placemarkCollectionParams(x)).toList(),
-      'clusterStyle': _placemarkStyleInternalParams(collection.clusterStyle),
-      'clusterRadius': collection.clusterRadius,
-      'minZoom': collection.minZoom,
-    };
-  }
-
-  Map<String, dynamic> _placemarkCollectionParams(PlacemarkCollection collection) {
-    return <String, dynamic>{
-      'items': collection.items.map((x) => _placemarkCollectionItemParams(x)).toList(),
-    }..addAll(_placemarkStyleParams(collection.style));
-  }
-
-  Map<String, dynamic> _placemarkCollectionItemParams(PlacemarkCollectionItem item) {
-    return <String, dynamic>{
-      'point': <String, dynamic>{
-        'latitude': item.point.latitude,
-        'longitude': item.point.longitude,
-      },
-      'id': item.id,
-    };
-  }
-
-  Map<String, dynamic> _polylineParams(Polyline polyline) {
-    final List<Map<String, double>> coordinates = polyline.coordinates
-        .map((Point p) => <String, double>{'latitude': p.latitude, 'longitude': p.longitude})
-        .toList();
-
-    return <String, dynamic>{'hashCode': polyline.hashCode, 'coordinates': coordinates}
-      ..addAll(_polylineStyleParams(polyline.style));
-  }
-
-  Map<String, dynamic> _polylineStyleParams(PolylineStyle style) {
-    return <String, dynamic>{
-      'style': <String, dynamic>{
-        'strokeColor': style.strokeColor.value,
-        'strokeWidth': style.strokeWidth,
-        'outlineColor': style.outlineColor.value,
-        'outlineWidth': style.outlineWidth,
-        'isGeodesic': style.isGeodesic,
-        'dashLength': style.dashLength,
-        'dashOffset': style.dashOffset,
-        'gapLength': style.gapLength,
-      }
-    };
-  }
-
-  Map<String, dynamic> _polygonParams(Polygon polygon) {
-    final List<Map<String, double>> coordinates = polygon.coordinates
-        .map((Point p) => <String, double>{'latitude': p.latitude, 'longitude': p.longitude})
-        .toList();
-
-    return <String, dynamic>{
-      'hashCode': polygon.hashCode,
-      'coordinates': coordinates,
-    }..addAll(_polygonStyleParams(polygon.style));
-  }
-
-  Map<String, dynamic> _polygonStyleParams(PolygonStyle style) {
-    return <String, dynamic>{
-      'style': <String, dynamic>{
-        'strokeColor': style.strokeColor.value,
-        'strokeWidth': style.strokeWidth,
-        'fillColor': style.fillColor.value,
-        'isGeodesic': style.isGeodesic,
-      }
-    };
+    return null;
   }
 }

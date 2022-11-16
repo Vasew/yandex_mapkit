@@ -2,6 +2,10 @@
 
 A flutter plugin for displaying yandex maps on iOS and Android.
 
+|             | Android |   iOS   |
+|-------------|---------|---------|
+| __Support__ | SDK 21+ | iOS 12+ |
+
 __Disclaimer__: This project uses Yandex Mapkit which belongs to Yandex  
 When using Mapkit refer to these [terms of use](https://tech.yandex.com/maps/doc/mapkit/3.x/concepts/conditions-docpage/)
 
@@ -17,32 +21,9 @@ When using Mapkit refer to these [terms of use](https://tech.yandex.com/maps/doc
 1. Add `import YandexMapsMobile` to `ios/Runner/AppDelegate.swift`
 2. Add `YMKMapKit.setApiKey("YOUR_API_KEY")` inside `func application` in `ios/Runner/AppDelegate.swift`
 3. Specify your API key in the application delegate `ios/Runner/AppDelegate.swift`
-4. For Flutter version less than 1.22 add `<key>io.flutter.embedded_views_preview</key> <true/>` inside `<dict>` tag in `ios/Runner/Info.plist`
-5. Uncomment `platform :ios, '9.0'` in `ios/Podfile`
+4. Uncomment `platform :ios, '9.0'` in `ios/Podfile` and change to `platform :ios, '12.0'`
 
 `ios/Runner/AppDelegate.swift`:
-
-For Swift 4.0 and lesser
-
-```swift
-import UIKit
-import Flutter
-import YandexMapsMobile
-
-@UIApplicationMain
-@objc class AppDelegate: FlutterAppDelegate {
-  override func application(
-    _ application: UIApplication,
-    didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?
-  ) -> Bool {
-    YMKMapKit.setApiKey("YOUR_API_KEY")
-    GeneratedPluginRegistrant.register(with: self)
-    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
-  }
-}
-```
-
-For Swift 4.2 and greater
 
 ```swift
 import UIKit
@@ -55,7 +36,8 @@ import YandexMapsMobile
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    YMKMapKit.setApiKey("YOUR_API_KEY")
+    YMKMapKit.setLocale("YOUR_LOCALE") // Your preferred language. Not required, defaults to system language
+    YMKMapKit.setApiKey("YOUR_API_KEY") // Your generated API key
     GeneratedPluginRegistrant.register(with: self)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
@@ -64,20 +46,17 @@ import YandexMapsMobile
 
 ### Initializing for Android
 
-1. Add dependency `implementation 'com.yandex.android:maps.mobile:4.0.0-full'` to `android/app/build.gradle`
+1. Add dependency `implementation 'com.yandex.android:maps.mobile:4.2.2-full'` to `android/app/build.gradle`
 2. Add permissions `<uses-permission android:name="android.permission.INTERNET"/>` and `<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>` to `android/app/src/main/AndroidManifest.xml`
-3. Add `import com.yandex.mapkit.MapKitFactory;` to `android/app/src/main/.../MainActivity.java`
-4. Add `MapKitFactory.setApiKey("YOUR_API_KEY");` inside method `onCreate` in `android/app/src/main/.../MainActivity.java`
-5. Specify your API key in the application delegate `android/app/src/main/.../MainActivity.java`
+3. Add `import com.yandex.mapkit.MapKitFactory;` to `android/app/src/main/.../MainActivity.java`/`android/app/src/main/.../MainActivity.kt`
+4. `MapKitFactory.setApiKey("YOUR_API_KEY");` inside method `onCreate` in `android/app/src/main/.../MainActivity.java`/`android/app/src/main/.../MainActivity.kt`
+5. Specify your API key in the application delegate `android/app/src/main/.../MainActivity.java`/`android/app/src/main/.../MainActivity.kt`
 
 `android/app/build.gradle`:
 
 ```groovy
 dependencies {
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test:runner:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
-    implementation 'com.yandex.android:maps.mobile:4.0.0-full'
+    implementation 'com.yandex.android:maps.mobile:4.2.2-full'
 }
 ```
 
@@ -95,7 +74,8 @@ import com.yandex.mapkit.MapKitFactory;
 public class MainActivity extends FlutterActivity {
   @Override
   public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
-    MapKitFactory.setApiKey("YOUR_API_KEY");
+    MapKitFactory.setLocale("YOUR_LOCALE"); // Your preferred language. Not required, defaults to system language
+    MapKitFactory.setApiKey("YOUR_API_KEY"); // Your generated API key
     super.configureFlutterEngine(flutterEngine);
   }
 }
@@ -114,7 +94,8 @@ import com.yandex.mapkit.MapKitFactory
 
 class MainActivity: FlutterActivity() {
   override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
-    MapKitFactory.setApiKey("YOUR_API_KEY")
+    MapKitFactory.setLocale("YOUR_LOCALE") // Your preferred language. Not required, defaults to system language
+    MapKitFactory.setApiKey("YOUR_API_KEY") // Your generated API key
     super.configureFlutterEngine(flutterEngine)
   }
 }
@@ -126,16 +107,34 @@ For usage examples refer to example [app](https://github.com/Unact/yandex_mapkit
 
 ![image](https://user-images.githubusercontent.com/8961745/100362969-26e23880-300d-11eb-9529-6ab36beffa51.png)
 
+### Additional remarks
+
+YandexMapkit always works with __one language__ only.  
+Due to native constraints after the application is launched it can't be changed.
+
+#### Android
+
+##### Hybrid Composition
+
+By default android views are rendered using [Hybrid Composition](https://flutter.dev/docs/development/platform-integration/platform-views).
+To render the `YandexMap` widget on Android using Virtual Display(old composition), set AndroidYandexMap.useAndroidViewSurface to false.
+Place this anywhere in your code, before using `YandexMap` widget.
+
+```dart
+AndroidYandexMap.useAndroidViewSurface = false;
+```
+
 ### Features
 
-- [X] iOS Support
-- [X] Android Support
-- [X] Adding and removing Placemarks
-- [X] Receiving Placemark tap events
+- [X] Working with Placemarks/Polylines/Polygons/Circles - adding, updating, removing, tap events, styling
+- [X] Working with collections of map objects
+- [X] Working with clusters
 - [X] Moving around the map
 - [X] Setting map bounds
 - [X] Showing current user location
 - [X] Styling the map
-- [X] Adding and removing Polylines
-- [X] Adding and removing Polygons
 - [X] Address suggestions
+- [X] Basic driving/bicycle routing
+- [X] Basic address direct/reverse search
+- [X] Workking with geo objects
+- [X] Showing current traffic conditions

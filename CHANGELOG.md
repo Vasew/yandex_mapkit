@@ -1,3 +1,168 @@
+## 3.2.0
+
+* Update and lock YandexMapkit version to 4.2.2-full for iOS and Android
+* Set minimum flutter version to 3.0.0
+* Fix incorrect example
+* Fix crashes on cluster styling
+* Fix incorrect Android view initialization
+
+## 3.1.1
+
+* Fix not working for flutter versions less than 3.0.0
+
+## 3.1.0
+
+* Update and lock YandexMapkit version to 4.2.0-full for iOS and Android
+* **Breaking change** `SearchOptions.searchSnippet` has been removed.
+* **Breaking change** `SearchOptions.directPageId` has been removed.
+* **Breaking change** `SearchOptions.appleCtx` has been removed.
+* **Breaking change** `SearchOptions.advertPageId` has been removed.
+* **Breaking change** `YandexMap.indoorEnabled` has been removed.
+* **Breaking change** `YandexMap.liteModeEnabled` has been removed.
+* Added new options to `DrivingOptions`
+
+## 3.0.3
+
+* Fix clusters not always showing [#255]
+
+## 3.0.2
+
+* Fix state updating incorrectly
+* Fix `YandexMap.onMapTap` not always working
+
+## 3.0.1
+
+* Fix early initialization finish on iOS and Android
+* Implement `YandexBicycle`
+* Fix map initialization for iOS arm64 simulator
+
+## 3.0.0
+
+* Update and lock YandexMapkit version to 4.1.0-full for iOS and Android
+* Add functionality to show traffic and listen to traffic changes
+* Add the ability to change current map type
+* Add the ability to select geo objects
+* `Geometry` object has been fully implemented to map the funcationality of native map geometry.
+* Updated `Polyline` to include new customization options.
+* Updated `CameraUpdate.newBounds` and `CameraUpdate.newTiltAzimuthBounds` to include new options.
+* **Breaking change** `SearchOptions.suggestWords` has been removed.
+* **Breaking change** `Polyline.isGeodesic` has been removed.
+* **Breaking change** `YandexMap.screenRect` has been renamed to `YandexMap.focusRect`
+* **Breaking change**. `Polygon`, `Polyline`, `Circle`, `Placemark` have been renamed to
+`PolygonMapObject`, `PolylineMapObject`, `CircleMapObject`, `PlacemarkMapObject` respectively.
+They now accept a corresponding object(`Polygon`, `Polyline`, `Circle`, `Placemark`) describing their geometry.
+
+## 2.0.6
+
+* Fix iOS crash for `YandexMapController.moveCamera`
+* Add the ability to follow user
+* Fixed mutable lists in `Polygon`, `Polyline`
+* **Breaking change**. Removed const definition from `Polygon`, `Polyline`, `Circle`, `Placemark`
+
+## 2.0.5
+
+* Fix several crashes for iOS and Android
+
+## 2.0.4
+
+* Minor optimizations
+* Fix incorrect displaying of clusters for slow devices
+* Fix Android init on Activity restart in example app
+* Fix incorrect rendering of UserLocationView MapObjects
+
+## 2.0.3
+
+* Fix iOS crash for `YandexSuggest.getSuggestions`
+* Fix incorrect PlacemarkIconStyle constructor signature
+
+## 2.0.2
+
+* Fix Android view showing when `AndroidYandexMap.useAndroidViewSurface = true` and MainActivity is FlutterFragmentActivity
+
+## 2.0.1
+
+* Fix Android view showing when `AndroidYandexMap.useAndroidViewSurface = true` [#180, just-kip]
+* Fix incorrect results for `YandexMapController.getVisibleRegion` and `YandexMapController.getFocusRegion`
+
+## 2.0.0
+
+* Add Hybrid composition for Android
+* Implement `YandexDriving`
+* Implement `YandexSearch`, move suggest functionality to `YandexSuggest`
+* Added the ability to add composite icon Placemark
+* Added the ability to work with MapObjectCollection
+* Added the ability to control which tap events should be consumed
+* Added placemark clusterization
+* Added visibility toogle for all map objects
+* Added draggablity toggle for `Placemark`.
+* Allow specifing which gestures should be intercepted by `YandexMap`
+* Add `YandexMapController.getFocusRegion` to get visible region with focusRect taken into account
+* Add `YandexMapController.getPoint`/`YandexMapController.getScreenPoint` for working with screen/map coordinates
+* **Breaking change**. Removed `MapAnimation.smooth`. Replaced with `MapAnimation.type`.
+* **Breaking change**. Removed `YandexMapController.onMapSizeChanged`
+* **Breaking change**. Remove `PlacemarkStyle`, `CircleStyle`, `PolygonStyle`, `PolylineStyle`.
+All styling options can now be directly set on corresponding map objects.
+* **Breaking change**. Removed rawImageData/iconName options from `Placemark`. Use `PlacemarkIconStyle.image` instead.
+* **Breaking change**. Removed
+ `YandexMapController.move`,
+ `YandexMapController.setBounds`,
+ `YandexMapController.zoomOut`,
+ `YandexMapController.zoomIn`.
+  Use universal `YandexMapController.moveCamera` instead.
+* **Breaking change**. Move and change method signature `YandexSearch.getSuggestions` to `YandexSuggest.getSuggestions`
+* **Breaking change**. Rework working with map objects. Removed
+ `YandexMapController.addPlacemark`, `YandexMapController.removePlacemark`,
+ `YandexMapController.addPolygon`, `YandexMapController.removePolygon`,
+ `YandexMapController.addPolyline`, `YandexMapController.removePolyline`,
+ `YandexMapController.addCircle`, `YandexMapController.removeCircle`.
+Use `YandexMap.mapObjects` in conjuction with `setState` to add and remove map objects.
+* **Breaking change**. `YandexMapController.setFocusRect` and `YandexMapController.clearFocusRect` moved to
+ `YandexMap.focusRect` property.
+* **Breaking change**. `YandexMapController.logoAlignment` moved to `YandexMap.logoAlignment` property.
+* **Breaking change**. `YandexMapController.move` method signature has been changed.
+* **Breaking change**. `YandexMapController.setBounds` method signature has been changed.
+* **Breaking change**. `YandexMapController.setFocusRect` method signature has been changed.
+* **Breaking change**. `YandexMapController.getVisibleRegion` method signature has been changed.
+* **Breaking change**. `YandexMapController.setMapStyle` method signature has been changed.
+* **Breaking change**. Removed `YandexMapController.getZoom`, `YandexMapController.getTargetPoint`.
+Use `YandexMapController.getCameraPosition` to get zoom, target and much more.
+* **Breaking change**. Removed `YandexMapController.getUserTargetPoint`
+Use `YandexMapController.getUserCameraPosition` to get target and much more.
+* **Breaking change**. Removed `YandexMapController.enableCameraTracking`/`YandexMapController.disableCameraTracking`
+Use `YandexMap.onCameraPositionChanged` to receive camera updates
+* **Breaking change**. Removed `YandexMapController.toggleMapRotation`. Use `YandexMap.rotateGesturesEnabled` instead.
+* **Breaking change**. Removed `YandexMapController.toggleTiltGestures` and `YandexMapController.isTiltGesturesEnabled`.
+Use `YandexMap.tiltGesturesEnabled` instead.
+* **Breaking change**. Removed `YandexMapController.toggleNightMode`. Use `YandexMap.nightModeEnabled` instead.
+* **Breaking change**. Removed `YandexMapController.toggleZoomGestures` and `YandexMapController.isZoomGesturesEnabled`.
+Use `YandexMap.zoomGesturesEnabled` instead.
+* **Breaking change**. `YandexSuggest.getSuggestions` method signature has been changed.
+
+## 1.1.1
+
+* Fix compiling errors for swift versions lower than 5.4 [#119, cream-cheeze]
+
+## 1.1.0
+
+* Add gesture manipulation [#120, cream-cheeze]
+* Add additional zoom features(min/max, disabling/enabling) [#116, cream-cheeze]
+* Add the ability to work with `Circle` objects [#115, cream-cheeze]
+
+## 1.0.1
+
+* Fix memory leak on iOS #107
+
+## 1.0.0
+
+* Migrate to null-safety
+* Add the ability to create `Polygon` with different inner shapes.
+* Add the ability to get users current point
+* Add the ability to set focus rectangle
+* **Breaking change**. Removed `YandexMapController.moveToUser`.
+* **Breaking change**. `YandexSearch.getSuggestions` method signature has been drastically changed.
+* **Breaking change**. `Placemark.onTap` callback signature has been changed. Now also returns `Placemark` on which this callback has been called.
+* **Breaking change**. `YandexMapController.enableCameraTracking` method signature has been changed.
+
 ## 0.5.1
 
 * Add visible region retrieval for `YandexMapController`
