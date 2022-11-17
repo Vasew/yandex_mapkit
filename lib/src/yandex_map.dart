@@ -19,7 +19,7 @@ class YandexMap extends StatefulWidget {
     Key? key,
     this.gestureRecognizers = const <Factory<OneSequenceGestureRecognizer>>{},
     this.mapObjects = const [],
-    this.mapObjectsWeb = const [],
+    this.mapObjectsWeb = [],
     this.tiltGesturesEnabled = true,
     this.zoomGesturesEnabled = true,
     this.rotateGesturesEnabled = true,
