@@ -329,7 +329,7 @@ class _YandexMapState extends State<YandexMap> {
                 objectManager = new ymaps.ObjectManager({
                     clusterize: true,
                     gridSize: 32,
-                    clusterDisableClickZoom: true,
+                    /*clusterDisableClickZoom: true,*/
                     geoObjectOpenBalloonOnClick: false,
                     clusterOpenBalloonOnClick: false
                 });
