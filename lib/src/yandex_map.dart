@@ -380,8 +380,8 @@ class _YandexMapState extends State<YandexMap> {
             objectManager.objects.events.add(['mouseenter', 'mouseleave'], onObjectEvent);
             objectManager.clusters.events.add(['mouseenter', 'mouseleave'], onClusterEvent);
 
-            objectManager.objects.options.set('preset', 'islands#greenDotIcon');
-            objectManager.clusters.options.set('preset', 'islands#greenClusterIcons');
+           /* objectManager.objects.options.set('preset', 'islands#greenDotIcon');
+            objectManager.clusters.options.set('preset', 'islands#greenClusterIcons');*/
             objectManager.add($dataJson);
             myMap.geoObjects.add(objectManager);
 
