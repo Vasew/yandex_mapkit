@@ -376,10 +376,12 @@ class _YandexMapState extends State<YandexMap> {
                     });
                 }
             }
+            
+            function testFunc(){ console.log(123); }
 
             objectManager.objects.events.add(['mouseenter', 'mouseleave'], onObjectEvent);
             objectManager.clusters.events.add(['mouseenter', 'mouseleave'], onClusterEvent);
-            objectManager.objects.events.add('click', textFunc());
+            objectManager.objects.events.add('click', testFunc());
 
            /* objectManager.objects.options.set('preset', 'islands#greenDotIcon');
             objectManager.clusters.options.set('preset', 'islands#greenClusterIcons');*/
