@@ -377,7 +377,8 @@ class _YandexMapState extends State<YandexMap> {
                 }
             }
 
-            objectManager.objects.events.add(['mouseenter', 'mouseleave'], onObjectEvent);
+            objectManager.objects.events.add(['mouseenter', 'mouseleave'], textFunc);
+            //objectManager.objects.events.add(['mouseenter', 'mouseleave'], onObjectEvent);
             objectManager.clusters.events.add(['mouseenter', 'mouseleave'], onClusterEvent);
 
            /* objectManager.objects.options.set('preset', 'islands#greenDotIcon');
