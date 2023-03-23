@@ -377,7 +377,7 @@ class _YandexMapState extends State<YandexMap> {
                 }
             }
             
-            function testFunc(){ console.log(123); }
+            function testFunc(){ console.log(000); }
 
             objectManager.objects.events.add(['mouseenter', 'mouseleave'], onObjectEvent);
             objectManager.clusters.events.add(['mouseenter', 'mouseleave'], onClusterEvent);
