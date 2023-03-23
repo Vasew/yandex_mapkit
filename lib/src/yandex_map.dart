@@ -377,11 +377,11 @@ class _YandexMapState extends State<YandexMap> {
                 }
             }
             
-            function testFunc(){ console.log(4); }
+            function testFunc(e){ var objectId = e.get('objectId'); console.log(objectId); }
 
             objectManager.objects.events.add(['mouseenter', 'mouseleave'], onObjectEvent);
             objectManager.clusters.events.add(['mouseenter', 'mouseleave'], onClusterEvent);
-            objectManager.objects.events.add('click', testFunc());
+            objectManager.objects.events.add('click', testFunc);
 
            /* objectManager.objects.options.set('preset', 'islands#greenDotIcon');
             objectManager.clusters.options.set('preset', 'islands#greenClusterIcons');*/
