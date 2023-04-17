@@ -239,40 +239,40 @@ class _YandexMapState extends State<YandexMap> {
       }
     } else if(kIsWeb) {
       var centerPoint;
-      var arrayWeb = "";
+      var arrayWeb = '';
       if(widget.mapObjectsWeb.isNotEmpty){
         centerPoint = [widget.mapObjectsWeb.first['latitude'], widget.mapObjectsWeb.first['longitude']];
         widget.mapObjectsWeb.removeAt(0);
         var address;
         var title;
         for (var element in widget.mapObjectsWeb) {
-          address = htmlEscape.convert(element['address']) ?? "";
+          address = htmlEscape.convert(element['address']);
           title = htmlEscape.convert(element['title']);
-          arrayWeb = '$arrayWeb {"type": "Feature", "id": ${element['id']}, "geometry": {"type": "Point", "coordinates": [${element['latitude']}, ${element['longitude']}]}, "properties": {"balloonContent": "<strong>${title}</strong>", "clusterCaption": "${address}",	"hintContent": "${address}"}, "options":{"iconLayout": "default#image", "iconImageHref": "icons/location_mark.svg", "iconImageSize": [32, 32], "iconImageOffset": [-5, -38]}},';
+          arrayWeb = '$arrayWeb {"type": "Feature", "id": ${element['id']}, "geometry": {"type": "Point", "coordinates": [${element['latitude']}, ${element['longitude']}]}, "properties": {"balloonContent": "<strong>$title</strong>", "clusterCaption": "$address",	"hintContent": "$address"}, "options":{"iconLayout": "default#image", "iconImageHref": "icons/location_mark.svg", "iconImageSize": [32, 32], "iconImageOffset": [-5, -38]}},';
         }
       } else {
         centerPoint = [55.76, 37.64];
       }
 
-      Random random = new Random();
-      int randomNumber = random.nextInt(100);
-      String idMapRand = "map-$randomNumber";
+      var random = Random();
+      var randomNumber = random.nextInt(100);
+      var idMapRand = 'map-$randomNumber';
 
-      DivElement frame = DivElement();
-      DivElement divElement = DivElement()
+      var frame = DivElement();
+      var divElement = DivElement()
           ..id = idMapRand
           ..style.width = '100%'
           ..style.height = '100%';
       frame.append(divElement);
 
-      var dataJson = """ {
+      var dataJson = ''' {
           "type": "FeatureCollection",
           "features": [   $arrayWeb   ]
-      } """;
+      } ''';
 
-      StyleElement styleElement = new StyleElement();
+      var styleElement = StyleElement();
 
-      var styleYaMaps = """
+      var styleYaMaps = '''
         ymaps .ymaps-2-1-79-zoom__plus,
         ymaps .ymaps-2-1-79-zoom__minus,
         ymaps .ymaps-2-1-79-controls__control .ymaps-2-1-79-float-button {
@@ -312,10 +312,10 @@ class _YandexMapState extends State<YandexMap> {
         ymaps .ymaps-2-1-79-copyright {
           display:none
         }
-      """;
+      ''';
 
-      ScriptElement scriptElement = new ScriptElement();
-      var script = """
+      var scriptElement = ScriptElement();
+      var script = '''
         setTimeout(function(){ ymaps.ready(init);
         var myMap;
         function init () {
@@ -394,13 +394,13 @@ class _YandexMapState extends State<YandexMap> {
 
             myMap.setBounds(myMap.geoObjects.getBounds(),{checkZoomRange:true, zoomMargin:9});
         }},1000);
-        """;
+        ''';
       scriptElement.innerHtml = script;
       styleElement.innerHtml = styleYaMaps;
       frame.append(scriptElement);
       frame.append(styleElement);
 
-      String registerYandexMapId = "${YandexMap._viewType}_$randomNumber";
+      var registerYandexMapId = '${YandexMap._viewType}_$randomNumber';
 
       // ignore: undefined_prefixed_name
       ui.platformViewRegistry.registerViewFactory(
